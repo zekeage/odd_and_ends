@@ -25,17 +25,17 @@ print(f"Merging excel data from:\n{files}")
 
 combined = {}  # Dict[sheet_name: pd.DataFrame] to store the combined data
 for file in files:
-  xl = pd.ExcelFile(file)
-  for sheet in xl.sheet_names:
-    data = xl.parse(sheet)
-    data.insert(0, "source_file", file.name)  # keep track of source file
-    if sheet not in combined:  # first file creates the pd.DataFrame
-        combined[sheet] = data
-    else:  # subsequent files are concatenated to the existing pd.DataFrame
-       combined[sheet] = pd.concat([combined[sheet], data])
+    xl = pd.ExcelFile(file)
+    for sheet in xl.sheet_names:
+        data = xl.parse(sheet)
+        data.insert(0, "source_file", file.name)  # keep track of source file
+        if sheet not in combined:  # first file creates the pd.DataFrame
+            combined[sheet] = data
+        else:  # subsequent files are concatenated to the existing pd.DataFrame
+            combined[sheet] = pd.concat([combined[sheet], data])
 
 # create the output .xlsx file and dump each combined sheet into it
-writer = pd.ExcelWriter(file.parent / output, engine = 'openpyxl')
-for (sheet_name, sheet) in combined.items():
-   sheet.to_excel(writer, sheet_name=sheet_name)
+writer = pd.ExcelWriter(file.parent / output, engine="openpyxl")
+for sheet_name, sheet in combined.items():
+    sheet.to_excel(writer, sheet_name=sheet_name)
 writer.close()
